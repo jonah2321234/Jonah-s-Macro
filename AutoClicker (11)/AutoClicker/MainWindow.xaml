@@ -1,0 +1,212 @@
+<Window x:Class="AutoClicker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Jonah's Macro" Height="600" Width="640"
+        Background="{StaticResource BgBrush}"
+        FontFamily="Segoe UI"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="56"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title bar: centered name, top middle -->
+        <Border Grid.Row="0" Background="{StaticResource CardBrush}" BorderBrush="{StaticResource BorderBrush2}" BorderThickness="0,0,0,1">
+            <TextBlock Text="Jonah's Macro" HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Foreground="{StaticResource TextPrimary}" FontSize="16" FontWeight="Bold"/>
+        </Border>
+
+        <!-- Sidebar (left) + content (middle/center) -->
+        <TabControl Grid.Row="1" TabStripPlacement="Left">
+
+            <!-- ===================== RUN TAB ===================== -->
+            <TabItem Header="Run" Style="{StaticResource ModernTabItem}" IsSelected="True">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel MaxWidth="380" HorizontalAlignment="Center" Margin="20,16,20,20">
+
+                        <!-- Status / toggle card -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock x:Name="StatusText" Text="OFF" Foreground="{StaticResource TextPrimary}" FontSize="22" FontWeight="Bold"/>
+                                        <TextBlock x:Name="StatusSubText" Text="Press hotkey or button to start" Foreground="{StaticResource TextSecondary}" FontSize="12" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                    <Ellipse Grid.Column="1" x:Name="StatusDot" Width="14" Height="14" Fill="{StaticResource DangerBrush}" VerticalAlignment="Top"/>
+                                </Grid>
+
+                                <Button x:Name="ToggleButton" Content="Start"
+                                        Style="{StaticResource AccentButton}" Margin="0,16,0,0" Height="44"
+                                        Click="ToggleButton_Click"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Live stats card -->
+                        <Border Style="{StaticResource Card}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="LOOPS" Foreground="{StaticResource TextSecondary}" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock x:Name="LoopCountText" Text="0" Foreground="{DynamicResource AccentBrush}" FontSize="20" FontWeight="Bold"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="MACRO OPEN FOR" Foreground="{StaticResource TextSecondary}" FontSize="10" FontWeight="Bold"/>
+                                    <TextBlock x:Name="UptimeText" Text="00:00:00" Foreground="{StaticResource TextPrimary}" FontSize="20" FontWeight="Bold"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ===================== SETTINGS TAB ===================== -->
+            <TabItem Header="Settings" Style="{StaticResource ModernTabItem}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel MaxWidth="380" HorizontalAlignment="Center" Margin="20,16,20,20">
+
+                        <!-- Delay: side-to-side slider + exact entry -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Delay between steps" Foreground="{StaticResource TextPrimary}" FontWeight="SemiBold"/>
+                                    <TextBox Grid.Column="1" x:Name="DelayExactTextBox" Width="70" Text="0"
+                                             PreviewTextInput="DecimalOnly_PreviewTextInput" TextChanged="DelayExactTextBox_TextChanged"/>
+                                </Grid>
+                                <Slider x:Name="DelaySlider" Minimum="0" Maximum="200" Value="0"
+                                        TickFrequency="0.1" SmallChange="0.1" LargeChange="5"
+                                        IsMoveToPointEnabled="True"
+                                        ValueChanged="DelaySlider_ValueChanged"/>
+                                <TextBlock Text="Applies between each key press and each click, in milliseconds. Supports decimals down to 0.1ms. 0 = as fast as possible."
+                                           Foreground="{StaticResource TextSecondary}" FontSize="11" TextWrapping="Wrap" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- /swords delay -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="/swords delay" Foreground="{StaticResource TextPrimary}" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Pauses the loop, types //swords in chat, then resumes" Foreground="{StaticResource TextSecondary}" FontSize="11" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <CheckBox Grid.Column="1" x:Name="ResyncCheckBox" Style="{StaticResource SwitchCheckBox}" VerticalAlignment="Center"
+                                              Checked="SettingsControl_Changed" Unchecked="SettingsControl_Changed"/>
+                                </Grid>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Every (minutes)" Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="1" x:Name="ResyncMinutesTextBox" Width="60" Text="15"
+                                              PreviewTextInput="NumericOnly_PreviewTextInput" TextChanged="ResyncMinutesTextBox_TextChanged"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Theme -->
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+                            <StackPanel>
+                                <TextBlock Text="Color theme" Foreground="{StaticResource TextPrimary}" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                <ComboBox x:Name="ThemeComboBox" SelectionChanged="ThemeComboBox_SelectionChanged">
+                                    <ComboBoxItem Content="Blue"/>
+                                    <ComboBoxItem Content="Green"/>
+                                    <ComboBoxItem Content="Purple"/>
+                                    <ComboBoxItem Content="Red"/>
+                                    <ComboBoxItem Content="Orange"/>
+                                    <ComboBoxItem Content="Pink"/>
+                                    <ComboBoxItem Content="Cyan"/>
+                                    <ComboBoxItem Content="Gold"/>
+                                    <ComboBoxItem Content="Rainbow"/>
+                                </ComboBox>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Hotkey -->
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Text="Start/Stop hotkey" Foreground="{StaticResource TextPrimary}" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                <ComboBox x:Name="HotkeyComboBox" SelectionChanged="HotkeyComboBox_SelectionChanged">
+                                    <ComboBoxItem Content="F1" Tag="112"/>
+                                    <ComboBoxItem Content="F2" Tag="113"/>
+                                    <ComboBoxItem Content="F3" Tag="114"/>
+                                    <ComboBoxItem Content="F4" Tag="115"/>
+                                    <ComboBoxItem Content="F5" Tag="116"/>
+                                    <ComboBoxItem Content="F6" Tag="117"/>
+                                    <ComboBoxItem Content="F7" Tag="118"/>
+                                    <ComboBoxItem Content="F8" Tag="119"/>
+                                    <ComboBoxItem Content="F9" Tag="120"/>
+                                    <ComboBoxItem Content="F10" Tag="121"/>
+                                    <ComboBoxItem Content="F11" Tag="122"/>
+                                    <ComboBoxItem Content="F12" Tag="123"/>
+                                    <ComboBoxItem Content="Tab" Tag="9"/>
+                                    <ComboBoxItem Content="Caps Lock" Tag="20"/>
+                                    <ComboBoxItem Content="Esc" Tag="27"/>
+                                    <ComboBoxItem Content="Space" Tag="32"/>
+                                    <ComboBoxItem Content="Page Up" Tag="33"/>
+                                    <ComboBoxItem Content="Page Down" Tag="34"/>
+                                    <ComboBoxItem Content="End" Tag="35"/>
+                                    <ComboBoxItem Content="Home" Tag="36"/>
+                                    <ComboBoxItem Content="Left Arrow" Tag="37"/>
+                                    <ComboBoxItem Content="Up Arrow" Tag="38"/>
+                                    <ComboBoxItem Content="Right Arrow" Tag="39"/>
+                                    <ComboBoxItem Content="Down Arrow" Tag="40"/>
+                                    <ComboBoxItem Content="Insert" Tag="45"/>
+                                    <ComboBoxItem Content="Delete" Tag="46"/>
+                                    <ComboBoxItem Content="Num Lock" Tag="144"/>
+                                    <ComboBoxItem Content="Scroll Lock" Tag="145"/>
+                                    <ComboBoxItem Content="Pause" Tag="19"/>
+                                </ComboBox>
+                                <TextBlock Text="Number keys 1–9 and 0 are reserved — the app sends those itself as part of the macro."
+                                           Foreground="{StaticResource TextSecondary}" FontSize="11" TextWrapping="Wrap" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ===================== ABOUT TAB ===================== -->
+            <TabItem Header="About" Style="{StaticResource ModernTabItem}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel MaxWidth="380" HorizontalAlignment="Center" Margin="20,16,20,20">
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Text="About this macro" Foreground="{StaticResource TextPrimary}" FontWeight="Bold" FontSize="15" Margin="0,0,0,10"/>
+                                <TextBlock Foreground="{StaticResource TextSecondary}" TextWrapping="Wrap" FontSize="12" LineHeight="20">
+                                    Made by <Run FontWeight="Bold" Foreground="White">Jonah</Run>. This is a macro built for grinding in <Run FontWeight="Bold" Foreground="White">Blades World</Run> — it handles the repetitive swinging and key-timing for you so you can focus on the grind.
+                                    <LineBreak/><LineBreak/>
+                                    When toggled on, it presses <Run FontWeight="Bold" Foreground="White">1 through 0</Run>, clicking after each key, looping continuously.
+                                    <LineBreak/><LineBreak/>
+                                    If "/swords delay" is on, it periodically pauses to send <Run FontWeight="Bold" Foreground="White">/swords</Run> before resuming. Settings are saved automatically.
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</Window>
